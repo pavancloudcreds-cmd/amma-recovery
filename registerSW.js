@@ -1,0 +1,1 @@
+if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/amma-recovery/sw.js', { scope: '/amma-recovery/' })})}
