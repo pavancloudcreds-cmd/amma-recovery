@@ -193,7 +193,7 @@ const TX = {
     bpS:"Every morning without fail", bpDone:"✓ Done", bpMark:"✅ Given",
     nut:"Nutrition Progress", iron:"🩸 Iron", prot:"💪 Protein",
     cal:"🔥 Calories", vit:"🍊 Vitamin C",
-    add:"+ Add Extra Item", nToday:"Today", nHist:"History",
+    add:"+ Add Extra Item", nToday:"Today", nHistory:"History",
     nCook:"Cook", nAvoid:"Avoid",
     morn:"🌅 Morning — Sister · 6:30–9:00 AM",
     aft:"☀️ Afternoon — You · 12:30–2:00 PM",
@@ -242,7 +242,7 @@ const TX = {
     bpS:"ప్రతి రోజూ ఉదయం మరువకుండా", bpDone:"✓ ఇచ్చాను", bpMark:"✅ ఇచ్చారు",
     nut:"పోషణ పురోగతి", iron:"🩸 ఐరన్", prot:"💪 ప్రొటీన్",
     cal:"🔥 కేలరీలు", vit:"🍊 విటమిన్ సి",
-    add:"+ అదనపు ఆహారం జోడించు", nToday:"ఈరోజు", nHist:"చరిత్ర",
+    add:"+ అదనపు ఆహారం జోడించు", nToday:"ఈరోజు", nHistory:"చరిత్ర",
     nCook:"వంట", nAvoid:"నిషేధం",
     morn:"🌅 ఉదయం — సిస్టర్ బాధ్యత · 6:30–9:00 AM",
     aft:"☀️ మధ్యాహ్నం — మీ బాధ్యత · 12:30–2:00 PM",
@@ -288,8 +288,14 @@ const TX = {
 };
 
 function t(k){ return TX[lang][k] || TX.en[k] || k; }
-function itemName(item){ return lang === "te" ? item.te : item.en; }
-function itemDt(item){ return lang === "te" && item.dte ? item.dte : item.dt; }
+function itemName(item){
+  if(item.id && item.id.startsWith("md")) return item.en;
+  return lang==="te" ? item.te : item.en;
+}
+function itemDt(item){
+  if(item.id && item.id.startsWith("md")) return item.dt;
+  return lang==="te" && item.dte ? item.dte : item.dt;
+}
 
 // ===== FIREBASE =====
 function saveToFirebase(){
@@ -786,7 +792,7 @@ function applyLang(){
   const hT=document.getElementById("hT"); if(hT) hT.textContent=t("title");
   const hS=document.getElementById("hS"); if(hS) hS.textContent=t("sub");
   const sBdg=document.getElementById("sBdg"); if(sBdg) sBdg.textContent=t("badge");
-  // Modal labels
+  // Modal & static labels
   const map={
     addBtn:"add", imT:"whatHap", aD:"giveEat", aSkip:"skipIt", aBk:"goBack",
     uT:"undoTitle", uY:"yesReset", uN:"noKeep",
@@ -795,14 +801,24 @@ function applyLang(){
     hdCl:"close", dPdf:"pdf", howCl:"gotIt",
     rTitle:"resetConfirm", rWarn:"resetWarn", rYes:"resetYes", rNo:"resetNo",
     resetBtn:"resetDay",
+    histPgTitle:"nHistory",
   };
-  Object.keys(map).forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=t(map[id]); });
-  // Nav labels
+  Object.keys(map).forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.textContent=t(map[id]);
+  });
+  // Nav labels — uses nHistory, nToday, nCook, nAvoid
   ["today","history","cook","avoid"].forEach(pg=>{
     const nb=document.getElementById("nb-"+pg);
-    if(nb){ const span=nb.querySelector("span:last-child"); if(span) span.textContent=t("n"+pg.charAt(0).toUpperCase()+pg.slice(1)); }
+    if(nb){
+      const span=nb.querySelector("span:last-child");
+      if(span) span.textContent=t("n"+pg.charAt(0).toUpperCase()+pg.slice(1));
+    }
   });
-  // Re-render current page (this picks up new lang for all dynamic content)
+  // Search placeholder
+  const avSrch=document.getElementById("avSrch");
+  if(avSrch) avSrch.placeholder=t("srch");
+  // Full re-render of current page
   renderCurrentPage();
   updateSyncUI();
 }
@@ -848,7 +864,7 @@ function buildApp(){
   </div>
 
   <div class="pg" id="pg-history">
-    <div style="font-size:14px;font-weight:800;margin-bottom:11px;">📅 History</div>
+    <div style="font-size:14px;font-weight:800;margin-bottom:11px;">📅 <span id="histPgTitle">History</span></div>
     <div id="hiList"></div>
   </div>
   <div class="pg" id="pg-cook"></div>
