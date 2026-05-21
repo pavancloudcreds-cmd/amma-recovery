@@ -36,7 +36,7 @@ function getToday() {
   return appData[TODAY];
 }
 function isFirstDay() {
-  return TODAY === START_DATE;
+  return TODAY <= START_DATE;
 }
 
 // ===== MEAL PLAN - 3 rotating patterns =====
@@ -188,7 +188,7 @@ const AVOID = [
 // ===== TRANSLATIONS =====
 const TX = {
   en: {
-    title:"Amma Recovery", sub:"Mrs. Jayalakshmi · Pre-Surgery · v6",
+    title:"Amma Recovery", sub:"Mrs. Jayalakshmi · Pre-Surgery · v7",
     badge:"🏥 Surgery Prep Mode", bpT:"Telzun H 40mg — BP Tablet",
     bpS:"Every morning without fail", bpDone:"✓ Done", bpMark:"✅ Given",
     nut:"Nutrition Progress", iron:"🩸 Iron", prot:"💪 Protein",
@@ -237,7 +237,7 @@ const TX = {
     clearsAll:"Clears all marks for today",
   },
   te: {
-    title:"అమ్మ రికవరీ", sub:"శ్రీమతి జయలక్ష్మి · సర్జరీకి ముందు · v6",
+    title:"అమ్మ రికవరీ", sub:"శ్రీమతి జయలక్ష్మి · సర్జరీకి ముందు · v7",
     badge:"🏥 సర్జరీ సన్నాహక మోడ్", bpT:"టెల్జున్ హెచ్ 40mg — బీపీ మాత్ర",
     bpS:"ప్రతి రోజూ ఉదయం మరువకుండా", bpDone:"✓ ఇచ్చాను", bpMark:"✅ ఇచ్చారు",
     nut:"పోషణ పురోగతి", iron:"🩸 ఐరన్", prot:"💪 ప్రొటీన్",
@@ -310,7 +310,7 @@ function startFirebaseListener(){
     if(data) appData = data;
     synced = true;
     updateSyncUI();
-    renderCurrentPage();
+    applyLang(); // always re-render with current language
   }, ()=>{ synced=false; updateSyncUI(); });
 }
 
