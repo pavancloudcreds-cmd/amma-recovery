@@ -188,7 +188,7 @@ const AVOID = [
 // ===== TRANSLATIONS =====
 const TX = {
   en: {
-    title:"Amma Recovery", sub:"Mrs. Jayalakshmi · Pre-Surgery · v4",
+    title:"Amma Recovery", sub:"Mrs. Jayalakshmi · Pre-Surgery · v6",
     badge:"🏥 Surgery Prep Mode", bpT:"Telzun H 40mg — BP Tablet",
     bpS:"Every morning without fail", bpDone:"✓ Done", bpMark:"✅ Given",
     nut:"Nutrition Progress", iron:"🩸 Iron", prot:"💪 Protein",
@@ -237,7 +237,7 @@ const TX = {
     clearsAll:"Clears all marks for today",
   },
   te: {
-    title:"అమ్మ రికవరీ", sub:"శ్రీమతి జయలక్ష్మి · సర్జరీకి ముందు · v4",
+    title:"అమ్మ రికవరీ", sub:"శ్రీమతి జయలక్ష్మి · సర్జరీకి ముందు · v6",
     badge:"🏥 సర్జరీ సన్నాహక మోడ్", bpT:"టెల్జున్ హెచ్ 40mg — బీపీ మాత్ర",
     bpS:"ప్రతి రోజూ ఉదయం మరువకుండా", bpDone:"✓ ఇచ్చాను", bpMark:"✅ ఇచ్చారు",
     nut:"పోషణ పురోగతి", iron:"🩸 ఐరన్", prot:"💪 ప్రొటీన్",
@@ -372,8 +372,7 @@ function renderToday(){
   setBar("cBar",tc,1800,"kcal","cVl"); setBar("vBar",tv,500,"mg","vVl");
 
   // Update nutrition labels
-  const labels={iLb:"iron",pLb:"prot",cLb:"cal",vLb:"vit",nTitle:"nut"};
-  Object.keys(labels).forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=t(labels[id]); });
+  // nutrition labels updated by applyLang always
 
   const sec=document.getElementById("dietSec");
   if(!sec) return;
@@ -786,43 +785,71 @@ function showPage(name){
   renderCurrentPage();
 }
 
-// ===== APPLY LANGUAGE - full re-render =====
+// ===== APPLY LANGUAGE - updates ALL elements regardless of current page =====
 function applyLang(){
-  // Header
-  const hT=document.getElementById("hT"); if(hT) hT.textContent=t("title");
-  const hS=document.getElementById("hS"); if(hS) hS.textContent=t("sub");
-  const sBdg=document.getElementById("sBdg"); if(sBdg) sBdg.textContent=t("badge");
-  // Modal & static labels
+  // Master map of ALL element IDs to translation keys
   const map={
-    addBtn:"add", imT:"whatHap", aD:"giveEat", aSkip:"skipIt", aBk:"goBack",
-    uT:"undoTitle", uY:"yesReset", uN:"noKeep",
-    buT:"bpUndo", buY:"yesR", buN:"noK",
-    exT:"addTitle", exSvBtn:"save", exCnBtn:"cancel",
-    hdCl:"close", dPdf:"pdf", howCl:"gotIt",
-    rTitle:"resetConfirm", rWarn:"resetWarn", rYes:"resetYes", rNo:"resetNo",
+    // Header
+    hT:"title", hS:"sub", sBdg:"badge",
+    // BP section
+    bpT2:"bpT", bpS2:"bpS",
+    // Nutrition labels
+    nTitle:"nut", iLb:"iron", pLb:"prot", cLb:"cal", vLb:"vit",
+    // Buttons on today page
+    addBtn:"add",
     resetBtn:"resetDay",
+    clearsAllLbl:"clearsAll",
+    // Item action modal
+    imT:"whatHap", aD:"giveEat", aSkip:"skipIt", aBk:"goBack",
+    // Undo modal
+    uT:"undoTitle", uY:"yesReset", uN:"noKeep",
+    // BP undo modal
+    buT:"bpUndo", buY:"yesR", buN:"noK",
+    // Extra item modal
+    exT:"addTitle", exSvBtn:"save", exCnBtn:"cancel",
+    // History detail modal
+    hdCl:"close", dPdf:"pdf",
     histPgTitle:"nHistory",
+    // How to cook modal
+    howCl:"gotIt",
+    // Reset modal
+    rTitle:"resetConfirm", rWarn:"resetWarn", rYes:"resetYes", rNo:"resetNo",
   };
   Object.keys(map).forEach(id=>{
     const el=document.getElementById(id);
     if(el) el.textContent=t(map[id]);
   });
-  // Nav labels — direct ID lookup, reliable on all browsers
-  const navMap = {
-    "nav-today-lbl":   "nToday",
-    "nav-history-lbl": "nHistory",
-    "nav-cook-lbl":    "nCook",
-    "nav-avoid-lbl":   "nAvoid",
+
+  // Nav labels via direct IDs
+  const navMap={
+    "nav-today-lbl":"nToday",
+    "nav-history-lbl":"nHistory",
+    "nav-cook-lbl":"nCook",
+    "nav-avoid-lbl":"nAvoid",
   };
   Object.keys(navMap).forEach(id=>{
     const el=document.getElementById(id);
     if(el) el.textContent=t(navMap[id]);
   });
+
   // Search placeholder
   const avSrch=document.getElementById("avSrch");
   if(avSrch) avSrch.placeholder=t("srch");
-  // Full re-render of current page
-  renderCurrentPage();
+
+  // BP button state
+  const d=getToday();
+  const bpBtn=document.getElementById("bpBtn");
+  if(bpBtn){
+    bpBtn.textContent=d.bp?(t("bpMark")+(d.bpTime?" "+d.bpTime:"")): t("bpDone");
+    bpBtn.className="bpb "+(d.bp?"bpb-done":"bpb-pending");
+  }
+
+  // ALWAYS re-render today content (diet items, extras) regardless of current page
+  renderToday();
+
+  // Also re-render current page if not today
+  if(currentPage!=="today") renderCurrentPage();
+
   updateSyncUI();
 }
 
