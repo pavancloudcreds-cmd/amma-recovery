@@ -188,7 +188,7 @@ const AVOID = [
 // ===== TRANSLATIONS =====
 const TX = {
   en: {
-    title:"Amma Recovery", sub:"Mrs. Jayalakshmi · Pre-Surgery",
+    title:"Amma Recovery", sub:"Mrs. Jayalakshmi · Pre-Surgery · v4",
     badge:"🏥 Surgery Prep Mode", bpT:"Telzun H 40mg — BP Tablet",
     bpS:"Every morning without fail", bpDone:"✓ Done", bpMark:"✅ Given",
     nut:"Nutrition Progress", iron:"🩸 Iron", prot:"💪 Protein",
@@ -237,7 +237,7 @@ const TX = {
     clearsAll:"Clears all marks for today",
   },
   te: {
-    title:"అమ్మ రికవరీ", sub:"శ్రీమతి జయలక్ష్మి · సర్జరీకి ముందు",
+    title:"అమ్మ రికవరీ", sub:"శ్రీమతి జయలక్ష్మి · సర్జరీకి ముందు · v4",
     badge:"🏥 సర్జరీ సన్నాహక మోడ్", bpT:"టెల్జున్ హెచ్ 40mg — బీపీ మాత్ర",
     bpS:"ప్రతి రోజూ ఉదయం మరువకుండా", bpDone:"✓ ఇచ్చాను", bpMark:"✅ ఇచ్చారు",
     nut:"పోషణ పురోగతి", iron:"🩸 ఐరన్", prot:"💪 ప్రొటీన్",
@@ -807,13 +807,16 @@ function applyLang(){
     const el=document.getElementById(id);
     if(el) el.textContent=t(map[id]);
   });
-  // Nav labels — uses nHistory, nToday, nCook, nAvoid
-  ["today","history","cook","avoid"].forEach(pg=>{
-    const nb=document.getElementById("nb-"+pg);
-    if(nb){
-      const span=nb.querySelector("span:last-child");
-      if(span) span.textContent=t("n"+pg.charAt(0).toUpperCase()+pg.slice(1));
-    }
+  // Nav labels — direct ID lookup, reliable on all browsers
+  const navMap = {
+    "nav-today-lbl":   "nToday",
+    "nav-history-lbl": "nHistory",
+    "nav-cook-lbl":    "nCook",
+    "nav-avoid-lbl":   "nAvoid",
+  };
+  Object.keys(navMap).forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.textContent=t(navMap[id]);
   });
   // Search placeholder
   const avSrch=document.getElementById("avSrch");
@@ -874,10 +877,10 @@ function buildApp(){
   </div>
 
   <div class="bnav">
-    <button class="nb active" id="nb-today"><span class="ni">🌿</span><span>Today</span></button>
-    <button class="nb" id="nb-history"><span class="ni">📅</span><span>History</span></button>
-    <button class="nb" id="nb-cook"><span class="ni">🍳</span><span>Cook</span></button>
-    <button class="nb" id="nb-avoid"><span class="ni">🚫</span><span>Avoid</span></button>
+    <button class="nb active" id="nb-today"><span class="ni">🌿</span><span id="nav-today-lbl">Today</span></button>
+    <button class="nb" id="nb-history"><span class="ni">📅</span><span id="nav-history-lbl">History</span></button>
+    <button class="nb" id="nb-cook"><span class="ni">🍳</span><span id="nav-cook-lbl">Cook</span></button>
+    <button class="nb" id="nb-avoid"><span class="ni">🚫</span><span id="nav-avoid-lbl">Avoid</span></button>
   </div>
 
   <div class="ov" id="itmMod"><div class="mod">
